@@ -1,0 +1,825 @@
+data.archive_file.lambda-zip: Reading...
+data.archive_file.lambda-zip: Read complete after 0s [id=9ffe66d5f22f9ef9f382e553f4ba296ce087b2c2]
+data.aws_iam_policy_document.assume-codepipeline-policy: Reading...
+data.aws_iam_policy_document.assume-codebuild-policy: Reading...
+data.aws_iam_policy_document.assume-codepipeline-policy: Read complete after 0s [id=382154967]
+data.aws_iam_policy_document.lambda-s3-policy: Reading...
+data.aws_iam_policy_document.assume_role_policy: Reading...
+data.aws_iam_policy_document.assume_role_lambda: Reading...
+data.aws_iam_policy_document.assume_role_lambda: Read complete after 0s [id=3693445097]
+data.aws_iam_policy_document.lambda-s3-policy: Read complete after 0s [id=196210867]
+data.aws_iam_policy_document.assume-codebuild-policy: Read complete after 0s [id=442947395]
+data.aws_iam_policy_document.assume_role_policy: Read complete after 0s [id=320642683]
+aws_iam_policy.lambda-s3-policy: Refreshing state... [id=arn:aws:iam::962804699607:policy/JnkLambdaS3ExecutionPolicy]
+aws_s3_bucket.jnk_s3_cap2_tf: Refreshing state... [id=jnk-todo-tf]
+aws_iam_role.iam-lambda-role: Refreshing state... [id=jnk-capstone2-gettodos-lambda-role-with-s3]
+aws_iam_role_policy_attachment.attach-s3-role: Refreshing state... [id=jnk-capstone2-gettodos-lambda-role-with-s3-20230313202451280800000001]
+aws_lambda_function.lambda-create: Refreshing state... [id=jnk-todo-init-tf]
+aws_s3_object.s3_bucket_uploader: Refreshing state... [id=todo-data]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_alb.application_load_balancer will be created
+  + resource "aws_alb" "application_load_balancer" {
+      + arn                        = (known after apply)
+      + arn_suffix                 = (known after apply)
+      + desync_mitigation_mode     = "defensive"
+      + dns_name                   = (known after apply)
+      + drop_invalid_header_fields = false
+      + enable_deletion_protection = false
+      + enable_http2               = true
+      + enable_waf_fail_open       = false
+      + id                         = (known after apply)
+      + idle_timeout               = 60
+      + internal                   = (known after apply)
+      + ip_address_type            = (known after apply)
+      + load_balancer_type         = "application"
+      + name                       = "jnk-tf-cp2-alb"
+      + preserve_host_header       = false
+      + security_groups            = (known after apply)
+      + subnets                    = (known after apply)
+      + tags_all                   = (known after apply)
+      + vpc_id                     = (known after apply)
+      + zone_id                    = (known after apply)
+
+      + subnet_mapping {
+          + allocation_id        = (known after apply)
+          + ipv6_address         = (known after apply)
+          + outpost_id           = (known after apply)
+          + private_ipv4_address = (known after apply)
+          + subnet_id            = (known after apply)
+        }
+    }
+
+  # aws_codebuild_project.jnk-tf-cp2-cb-create will be created
+  + resource "aws_codebuild_project" "jnk-tf-cp2-cb-create" {
+      + arn                  = (known after apply)
+      + badge_enabled        = false
+      + badge_url            = (known after apply)
+      + build_timeout        = 60
+      + description          = "jnk-tf-codebuild-project"
+      + encryption_key       = (known after apply)
+      + id                   = (known after apply)
+      + name                 = "jnk-tf-cp2-codebuild"
+      + project_visibility   = "PRIVATE"
+      + public_project_alias = (known after apply)
+      + queued_timeout       = 480
+      + service_role         = (known after apply)
+      + tags_all             = (known after apply)
+
+      + artifacts {
+          + encryption_disabled    = false
+          + override_artifact_name = false
+          + type                   = "NO_ARTIFACTS"
+        }
+
+      + environment {
+          + compute_type                = "BUILD_GENERAL1_SMALL"
+          + image                       = "aws/codebuild/standard:3.0"
+          + image_pull_credentials_type = "CODEBUILD"
+          + privileged_mode             = true
+          + type                        = "LINUX_CONTAINER"
+
+          + environment_variable {
+              + name  = "AWS_ACCOUNT_ID"
+              + type  = "PLAINTEXT"
+              + value = "962804699607"
+            }
+          + environment_variable {
+              + name  = "AWS_DEFAULT_REGION"
+              + type  = "PLAINTEXT"
+              + value = "us-west-2"
+            }
+          + environment_variable {
+              + name  = "IMAGE_REPO_NAME"
+              + type  = "PLAINTEXT"
+              + value = (known after apply)
+            }
+          + environment_variable {
+              + name  = "IMAGE_TAG"
+              + type  = "PLAINTEXT"
+              + value = "latest"
+            }
+          + environment_variable {
+              + name  = "CLUSTER_NAME"
+              + type  = "PLAINTEXT"
+              + value = (known after apply)
+            }
+          + environment_variable {
+              + name  = "SERVICE_NAME"
+              + type  = "PLAINTEXT"
+              + value = (known after apply)
+            }
+        }
+
+      + source {
+          + git_clone_depth = 1
+          + location        = "https://github.com/maytix/cloud-capstone-2-todo-app.git"
+          + type            = "GITHUB"
+        }
+    }
+
+  # aws_codepipeline.jnk-tf-cp2-cp-create will be created
+  + resource "aws_codepipeline" "jnk-tf-cp2-cp-create" {
+      + arn      = (known after apply)
+      + id       = (known after apply)
+      + name     = "jnk-tf-cp2-codepipeline"
+      + role_arn = (known after apply)
+      + tags_all = (known after apply)
+
+      + artifact_store {
+          + location = "jnk-cp-artifact-bucket"
+          + region   = (known after apply)
+          + type     = "S3"
+        }
+
+      + stage {
+          + name = "Source"
+
+          + action {
+              + category         = "Source"
+              + configuration    = (known after apply)
+              + name             = "Source"
+              + output_artifacts = [
+                  + "source_output",
+                ]
+              + owner            = "AWS"
+              + provider         = "CodeStarSourceConnection"
+              + region           = (known after apply)
+              + run_order        = 1
+              + version          = "1"
+            }
+        }
+      + stage {
+          + name = "Build"
+
+          + action {
+              + category        = "Build"
+              + configuration   = (known after apply)
+              + input_artifacts = [
+                  + "source_output",
+                ]
+              + name            = "Build"
+              + owner           = "AWS"
+              + provider        = "CodeBuild"
+              + region          = (known after apply)
+              + run_order       = (known after apply)
+              + version         = "1"
+            }
+        }
+    }
+
+  # aws_codestarconnections_connection.jnk-tf-cp2-connection will be created
+  + resource "aws_codestarconnections_connection" "jnk-tf-cp2-connection" {
+      + arn               = (known after apply)
+      + connection_status = (known after apply)
+      + id                = (known after apply)
+      + name              = "jnk-tf-cp2-cs-connection"
+      + provider_type     = "GitHub"
+      + tags_all          = (known after apply)
+    }
+
+  # aws_default_subnet.default_subnet_a will be created
+  + resource "aws_default_subnet" "default_subnet_a" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-west-2a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = (known after apply)
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + existing_default_subnet                        = (known after apply)
+      + force_destroy                                  = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block                                = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + outpost_arn                                    = (known after apply)
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags_all                                       = (known after apply)
+      + vpc_id                                         = (known after apply)
+    }
+
+  # aws_default_subnet.default_subnet_b will be created
+  + resource "aws_default_subnet" "default_subnet_b" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-west-2b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = (known after apply)
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + existing_default_subnet                        = (known after apply)
+      + force_destroy                                  = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block                                = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + outpost_arn                                    = (known after apply)
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags_all                                       = (known after apply)
+      + vpc_id                                         = (known after apply)
+    }
+
+  # aws_default_subnet.default_subnet_c will be created
+  + resource "aws_default_subnet" "default_subnet_c" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-west-2c"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = (known after apply)
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + existing_default_subnet                        = (known after apply)
+      + force_destroy                                  = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block                                = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + outpost_arn                                    = (known after apply)
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags_all                                       = (known after apply)
+      + vpc_id                                         = (known after apply)
+    }
+
+  # aws_default_vpc.default_vpc will be created
+  + resource "aws_default_vpc" "default_vpc" {
+      + arn                                  = (known after apply)
+      + cidr_block                           = (known after apply)
+      + default_network_acl_id               = (known after apply)
+      + default_route_table_id               = (known after apply)
+      + default_security_group_id            = (known after apply)
+      + dhcp_options_id                      = (known after apply)
+      + enable_classiclink                   = (known after apply)
+      + enable_classiclink_dns_support       = (known after apply)
+      + enable_dns_hostnames                 = true
+      + enable_dns_support                   = true
+      + enable_network_address_usage_metrics = (known after apply)
+      + existing_default_vpc                 = (known after apply)
+      + force_destroy                        = false
+      + id                                   = (known after apply)
+      + instance_tenancy                     = (known after apply)
+      + ipv6_association_id                  = (known after apply)
+      + ipv6_cidr_block                      = (known after apply)
+      + ipv6_cidr_block_network_border_group = (known after apply)
+      + main_route_table_id                  = (known after apply)
+      + owner_id                             = (known after apply)
+      + tags_all                             = (known after apply)
+    }
+
+  # aws_ecr_repository.jnk-tf-cp2-ecr-repo will be created
+  + resource "aws_ecr_repository" "jnk-tf-cp2-ecr-repo" {
+      + arn                  = (known after apply)
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "jnk-tf-cp2-ecr-repo"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags_all             = (known after apply)
+    }
+
+  # aws_ecs_cluster.jnk-tf-cp2-cluster will be created
+  + resource "aws_ecs_cluster" "jnk-tf-cp2-cluster" {
+      + arn                = (known after apply)
+      + capacity_providers = (known after apply)
+      + id                 = (known after apply)
+      + name               = "jnk-tf-cp2-cluster"
+      + tags_all           = (known after apply)
+
+      + default_capacity_provider_strategy {
+          + base              = (known after apply)
+          + capacity_provider = (known after apply)
+          + weight            = (known after apply)
+        }
+
+      + setting {
+          + name  = (known after apply)
+          + value = (known after apply)
+        }
+    }
+
+  # aws_ecs_service.jnk-tf-cp2_service will be created
+  + resource "aws_ecs_service" "jnk-tf-cp2_service" {
+      + cluster                            = (known after apply)
+      + deployment_maximum_percent         = 200
+      + deployment_minimum_healthy_percent = 100
+      + desired_count                      = 3
+      + enable_ecs_managed_tags            = false
+      + enable_execute_command             = false
+      + iam_role                           = (known after apply)
+      + id                                 = (known after apply)
+      + launch_type                        = "FARGATE"
+      + name                               = "jnk-tf-cp2-service"
+      + platform_version                   = (known after apply)
+      + scheduling_strategy                = "REPLICA"
+      + tags_all                           = (known after apply)
+      + task_definition                    = (known after apply)
+      + triggers                           = (known after apply)
+      + wait_for_steady_state              = false
+
+      + load_balancer {
+          + container_name   = "jnk-tf-cp2-task"
+          + container_port   = 3000
+          + target_group_arn = (known after apply)
+        }
+
+      + network_configuration {
+          + assign_public_ip = true
+          + security_groups  = (known after apply)
+          + subnets          = (known after apply)
+        }
+    }
+
+  # aws_ecs_task_definition.jnk-tf-cp2-task will be created
+  + resource "aws_ecs_task_definition" "jnk-tf-cp2-task" {
+      + arn                      = (known after apply)
+      + container_definitions    = (known after apply)
+      + cpu                      = "256"
+      + execution_role_arn       = (known after apply)
+      + family                   = "jnk-tf-cp2-task"
+      + id                       = (known after apply)
+      + memory                   = "512"
+      + network_mode             = "awsvpc"
+      + requires_compatibilities = [
+          + "FARGATE",
+        ]
+      + revision                 = (known after apply)
+      + skip_destroy             = false
+      + tags_all                 = (known after apply)
+    }
+
+  # aws_iam_role.codebuild-ecr-role will be created
+  + resource "aws_iam_role" "codebuild-ecr-role" {
+      + arn                   = (known after apply)
+      + assume_role_policy    = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "sts:AssumeRole"
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + Service = "codebuild.amazonaws.com"
+                        }
+                      + Sid       = ""
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + create_date           = (known after apply)
+      + force_detach_policies = false
+      + id                    = (known after apply)
+      + managed_policy_arns   = (known after apply)
+      + max_session_duration  = 3600
+      + name                  = "jnk-tf-cp2-cb-role"
+      + name_prefix           = (known after apply)
+      + path                  = "/"
+      + tags_all              = (known after apply)
+      + unique_id             = (known after apply)
+
+      + inline_policy {
+          + name   = (known after apply)
+          + policy = (known after apply)
+        }
+    }
+
+  # aws_iam_role.codepipeline-service-role will be created
+  + resource "aws_iam_role" "codepipeline-service-role" {
+      + arn                   = (known after apply)
+      + assume_role_policy    = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "sts:AssumeRole"
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + Service = "codepipeline.amazonaws.com"
+                        }
+                      + Sid       = ""
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + create_date           = (known after apply)
+      + force_detach_policies = false
+      + id                    = (known after apply)
+      + managed_policy_arns   = (known after apply)
+      + max_session_duration  = 3600
+      + name                  = "jnk-tf-cp2-cp-role"
+      + name_prefix           = (known after apply)
+      + path                  = "/"
+      + tags_all              = (known after apply)
+      + unique_id             = (known after apply)
+
+      + inline_policy {
+          + name   = (known after apply)
+          + policy = (known after apply)
+        }
+    }
+
+  # aws_iam_role.ecsTaskExecutionRole will be created
+  + resource "aws_iam_role" "ecsTaskExecutionRole" {
+      + arn                   = (known after apply)
+      + assume_role_policy    = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "sts:AssumeRole"
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + Service = "ecs-tasks.amazonaws.com"
+                        }
+                      + Sid       = ""
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + create_date           = (known after apply)
+      + force_detach_policies = false
+      + id                    = (known after apply)
+      + managed_policy_arns   = (known after apply)
+      + max_session_duration  = 3600
+      + name                  = "jnkTaskExecutionRole"
+      + name_prefix           = (known after apply)
+      + path                  = "/"
+      + tags_all              = (known after apply)
+      + unique_id             = (known after apply)
+
+      + inline_policy {
+          + name   = (known after apply)
+          + policy = (known after apply)
+        }
+    }
+
+  # aws_iam_role_policy.codebuild-policy will be created
+  + resource "aws_iam_role_policy" "codebuild-policy" {
+      + id     = (known after apply)
+      + name   = (known after apply)
+      + policy = (known after apply)
+      + role   = (known after apply)
+    }
+
+  # aws_iam_role_policy.codepipeline_policy will be created
+  + resource "aws_iam_role_policy" "codepipeline_policy" {
+      + id     = (known after apply)
+      + name   = "codepipeline_policy"
+      + policy = (known after apply)
+      + role   = (known after apply)
+    }
+
+  # aws_iam_role_policy_attachment.codebuild-ecr-policy will be created
+  + resource "aws_iam_role_policy_attachment" "codebuild-ecr-policy" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
+      + role       = "jnk-tf-cp2-cb-role"
+    }
+
+  # aws_iam_role_policy_attachment.ecsTaskExecutionRole_policy will be created
+  + resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+      + role       = "jnkTaskExecutionRole"
+    }
+
+  # aws_lb_listener.listener will be created
+  + resource "aws_lb_listener" "listener" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + load_balancer_arn = (known after apply)
+      + port              = 80
+      + protocol          = "HTTP"
+      + ssl_policy        = (known after apply)
+      + tags_all          = (known after apply)
+
+      + default_action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+    }
+
+  # aws_lb_target_group.target_group will be created
+  + resource "aws_lb_target_group" "target_group" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = false
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + ip_address_type                    = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancing_algorithm_type      = (known after apply)
+      + name                               = "jnk-tf-cp2-tg"
+      + port                               = 80
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTP"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 0
+      + tags_all                           = (known after apply)
+      + target_type                        = "ip"
+      + vpc_id                             = (known after apply)
+
+      + health_check {
+          + enabled             = (known after apply)
+          + healthy_threshold   = (known after apply)
+          + interval            = (known after apply)
+          + matcher             = (known after apply)
+          + path                = (known after apply)
+          + port                = (known after apply)
+          + protocol            = (known after apply)
+          + timeout             = (known after apply)
+          + unhealthy_threshold = (known after apply)
+        }
+
+      + stickiness {
+          + cookie_duration = (known after apply)
+          + cookie_name     = (known after apply)
+          + enabled         = (known after apply)
+          + type            = (known after apply)
+        }
+
+      + target_failover {
+          + on_deregistration = (known after apply)
+          + on_unhealthy      = (known after apply)
+        }
+    }
+
+  # aws_s3_bucket.codepipeline_bucket will be created
+  + resource "aws_s3_bucket" "codepipeline_bucket" {
+      + acceleration_status         = (known after apply)
+      + acl                         = (known after apply)
+      + arn                         = (known after apply)
+      + bucket                      = "jnk-cp-artifact-bucket"
+      + bucket_domain_name          = (known after apply)
+      + bucket_regional_domain_name = (known after apply)
+      + force_destroy               = false
+      + hosted_zone_id              = (known after apply)
+      + id                          = (known after apply)
+      + object_lock_enabled         = (known after apply)
+      + policy                      = (known after apply)
+      + region                      = (known after apply)
+      + request_payer               = (known after apply)
+      + tags_all                    = (known after apply)
+      + website_domain              = (known after apply)
+      + website_endpoint            = (known after apply)
+
+      + cors_rule {
+          + allowed_headers = (known after apply)
+          + allowed_methods = (known after apply)
+          + allowed_origins = (known after apply)
+          + expose_headers  = (known after apply)
+          + max_age_seconds = (known after apply)
+        }
+
+      + grant {
+          + id          = (known after apply)
+          + permissions = (known after apply)
+          + type        = (known after apply)
+          + uri         = (known after apply)
+        }
+
+      + lifecycle_rule {
+          + abort_incomplete_multipart_upload_days = (known after apply)
+          + enabled                                = (known after apply)
+          + id                                     = (known after apply)
+          + prefix                                 = (known after apply)
+          + tags                                   = (known after apply)
+
+          + expiration {
+              + date                         = (known after apply)
+              + days                         = (known after apply)
+              + expired_object_delete_marker = (known after apply)
+            }
+
+          + noncurrent_version_expiration {
+              + days = (known after apply)
+            }
+
+          + noncurrent_version_transition {
+              + days          = (known after apply)
+              + storage_class = (known after apply)
+            }
+
+          + transition {
+              + date          = (known after apply)
+              + days          = (known after apply)
+              + storage_class = (known after apply)
+            }
+        }
+
+      + logging {
+          + target_bucket = (known after apply)
+          + target_prefix = (known after apply)
+        }
+
+      + object_lock_configuration {
+          + object_lock_enabled = (known after apply)
+
+          + rule {
+              + default_retention {
+                  + days  = (known after apply)
+                  + mode  = (known after apply)
+                  + years = (known after apply)
+                }
+            }
+        }
+
+      + replication_configuration {
+          + role = (known after apply)
+
+          + rules {
+              + delete_marker_replication_status = (known after apply)
+              + id                               = (known after apply)
+              + prefix                           = (known after apply)
+              + priority                         = (known after apply)
+              + status                           = (known after apply)
+
+              + destination {
+                  + account_id         = (known after apply)
+                  + bucket             = (known after apply)
+                  + replica_kms_key_id = (known after apply)
+                  + storage_class      = (known after apply)
+
+                  + access_control_translation {
+                      + owner = (known after apply)
+                    }
+
+                  + metrics {
+                      + minutes = (known after apply)
+                      + status  = (known after apply)
+                    }
+
+                  + replication_time {
+                      + minutes = (known after apply)
+                      + status  = (known after apply)
+                    }
+                }
+
+              + filter {
+                  + prefix = (known after apply)
+                  + tags   = (known after apply)
+                }
+
+              + source_selection_criteria {
+                  + sse_kms_encrypted_objects {
+                      + enabled = (known after apply)
+                    }
+                }
+            }
+        }
+
+      + server_side_encryption_configuration {
+          + rule {
+              + bucket_key_enabled = (known after apply)
+
+              + apply_server_side_encryption_by_default {
+                  + kms_master_key_id = (known after apply)
+                  + sse_algorithm     = (known after apply)
+                }
+            }
+        }
+
+      + versioning {
+          + enabled    = (known after apply)
+          + mfa_delete = (known after apply)
+        }
+
+      + website {
+          + error_document           = (known after apply)
+          + index_document           = (known after apply)
+          + redirect_all_requests_to = (known after apply)
+          + routing_rules            = (known after apply)
+        }
+    }
+
+  # aws_s3_bucket_acl.codepipeline_bucket_acl will be created
+  + resource "aws_s3_bucket_acl" "codepipeline_bucket_acl" {
+      + acl    = "private"
+      + bucket = (known after apply)
+      + id     = (known after apply)
+
+      + access_control_policy {
+          + grant {
+              + permission = (known after apply)
+
+              + grantee {
+                  + display_name  = (known after apply)
+                  + email_address = (known after apply)
+                  + id            = (known after apply)
+                  + type          = (known after apply)
+                  + uri           = (known after apply)
+                }
+            }
+
+          + owner {
+              + display_name = (known after apply)
+              + id           = (known after apply)
+            }
+        }
+    }
+
+  # aws_security_group.load_balancer_security_group will be created
+  + resource "aws_security_group" "load_balancer_security_group" {
+      + arn                    = (known after apply)
+      + description            = "Managed by Terraform"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = ""
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = ""
+              + from_port        = 80
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 80
+            },
+        ]
+      + name                   = (known after apply)
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags_all               = (known after apply)
+      + vpc_id                 = (known after apply)
+    }
+
+  # aws_security_group.service_security_group will be created
+  + resource "aws_security_group" "service_security_group" {
+      + arn                    = (known after apply)
+      + description            = "Managed by Terraform"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = ""
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = []
+              + description      = ""
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = (known after apply)
+              + self             = false
+              + to_port          = 0
+            },
+        ]
+      + name                   = (known after apply)
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags_all               = (known after apply)
+      + vpc_id                 = (known after apply)
+    }
+
+Plan: 25 to add, 0 to change, 0 to destroy.
+
+─────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.
